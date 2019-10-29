@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable prefer-const */
 /* eslint-disable no-console */
 import Chart from 'chart.js';
@@ -21,19 +20,14 @@ const app = new App({
 console.log(app)
 const deltaKC = 273.15;
 const pA = 101325;
+const alpha = 3.9e-3;
 let Tair = 20 + deltaKC;
 let Dcyl = 0.050;
-let Vwind = 10;
+let Tref = 298;
 let Rwb = 12.32E-6;
 let Rwt = 13.88E-6;
-const alpha = 3.9e-3;
-let Tref = 298;
 let Rclampv = 1.85485E-6;
 let Rclamph = 6.69332E-6;
-// Rclampv = 1.35226E-6,
-// Rclamph = 30.2724E-6,
-// Rclampv = 1.35177E-6,
-// Rclamph = 30.2907E-6,
 let iCJ = [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1];
 let iLJ = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1];
 let a = [   [ -1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
@@ -54,11 +48,9 @@ let a = [   [ -1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
             [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, -1, 0 ],
             [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, -1 ] ];
 let tn = 2000
-function arrToString (arr) {
-    return `[${  arr.map(el => `[${  el  }]`).join(', ')  }]`
-}
+
 const s = new Solver(1);
-function createR (wb,wt,clampV,clampH,cont, len) {
+function createR (wb, wt, clampV, clampH, cont, len) {
     const cb = cont / 2
     const ct = cont / 2
     let R = new Array (len)
@@ -77,31 +69,18 @@ function createR (wb,wt,clampV,clampH,cont, len) {
 const hConv = convection(10,Dcyl,Tair,pA)
 const c = new Circuit(createR(Rwb,Rwt,Rclampv,Rclamph,16E-6,a[0].length),a,[iCJ,iLJ]);
 
-function iC (arg) { 
-    if (arg <= tn) {return 0}
-    if (arg < tn + 100) {return 1000}
-    if (arg <= 10000){return 0}
-    if (arg <=12000){return 0}
-    if (arg <=13000){return 0}
-    if (arg <=13200){return 0}
+function iC (arg) {
+    if (arg > tn && arg < tn + 100) {return 1000}
     return 0
 };
 function iL (arg) {
   if (arg <= tn) {return 1000}
-  if (arg <= 11000){return 0}
-  if (arg <=12000){return 0}
-  if (arg <=13000){return 0}
   return 0
 };
 
 function initClampDE () {
-    let c1 = 390;   
-    let c2 = 423;                
-    let m1 = 0.131;             
-    let m2 = 0.471;
     let delta = 5.67e-8;    
     let Fz2 = 0.012739; // Взято из геометрии
-    let Tamb = 20;
     let varEpsilon = 0.6
     return function DE (x, y) { 
         [y]=y
@@ -111,53 +90,11 @@ function initClampDE () {
 }
 const f = initClampDE()
 
+const result = [[0, 0, 10.53697116713672, 0, 1000]];
 
-const result = [];
 
-function collectValues (n,x0,x1,y) {
-    const collect = [x1,y[0],c.E([iC(x1),iL(x1)])*(1 + alpha*(Tair + y[0] - Tref)),iC(x1),iL(x1)]
-    result.push(collect);
-}
 
-s.relativeTolerance = 1E-10
-s.absoluteTolerance = 1E-10
 
-const start = new Date();
-s.denseOutput = false;  
-s.solve(f, 0, [0], tn, collectValues)
-
-let [nextStartX] = result[result.length - 1]
-let nextStartY = [result[result.length - 1][1]]
-
-s.denseOutput = true;  
-s.solve(f, nextStartX, nextStartY, tn + 100, s.grid(1, function collectResult(x1,y) {
-    collectValues (null,null,x1,y)
-}));
-s.denseOutput = false;  
-[nextStartX] = result[result.length - 1]
-nextStartY = [result[result.length - 1][1]]
-s.solve(f, nextStartX, nextStartY, tn * 2, collectValues)
-
-// s.solve(f, 0, [0], tn * 2, function(n,x0,x1,y) {
-//     // let collect = [x1,y[0],1000*f(x1,y)[0],iC(x1)/1000,iL(x1)/1000]
-//     let collect = [x1,y[0],c.E([iC(x1),iL(x1)])*(1 + alpha*(Tair + y[0] - Tref)),iC(x1),iL(x1)]
-//     // console.log(collect)
-//     result.push(collect);
-// }).y
-
-const end = new Date();
-console.log('time',end-start)
-// s.denseOutput = true;  // request interpolation closure in solution callback
-// s.solve(f, 0, [0], 10000, s.grid(15, function(x,y) {
-    //   console.log(x,y,f(x,y));
-const arrTestI = [1000,0]
-console.log(c.U0(arrTestI)())
-console.log('I',c.I(arrTestI)()[24])
-console.log(c.U0(arrTestI)()[0]*1000)
-console.log(c.U0(arrTestI)()[12]*1000)
-console.log(c.U0(arrTestI)()[12]*1000 - c.U0(arrTestI)()[0]*1000)
-
-// import Chart from 'chart.js';
 
 const config = {
     type: 'line',
@@ -218,6 +155,10 @@ const config = {
                 scaleLabel: {
                     display: true,
                     labelString: 'Время, с'
+                },
+                ticks: {
+                    beginAtZero: true,
+                    suggestedMax: tn * 2
                 }
             }],
             yAxes: [{
@@ -225,6 +166,10 @@ const config = {
                 scaleLabel: {
                     display: true,
                     labelString: 'Value'
+                },
+                ticks: {
+                    beginAtZero: true,
+                    suggestedMax: 30
                 }
             }]
         }
@@ -293,12 +238,18 @@ const config2 = {
                 scaleLabel: {
                     display: true,
                     labelString: 'Время, с'
+                },
+                ticks: {
+                    beginAtZero: true,
+                    suggestedMax: tn * 2
                 }
             }],
             yAxes: [{
                 display: true,
                 ticks: {
-                    maxTicksLimit: 8
+                    maxTicksLimit: 8,
+                    beginAtZero: true,
+                    suggestedMax: 1000
                 },
                 scaleLabel: {
                     display: true,
@@ -308,13 +259,74 @@ const config2 = {
         }
     }
 };
-window.onload = function drawChart () {
-    Chart.defaults.global.elements.point.hoverRadius = 7;
-    const ctx = document.getElementById('dataChart').getContext('2d')
-    window.dataChart = new Chart(ctx, config);
-    const ctx2 = document.getElementById('currentChart').getContext('2d')
-    window.currentChart = new Chart(ctx2, config2);
-    // ctx.canvas.parentNode.style.height = '800px';
-    // ctx2.canvas.parentNode.style.height = '200px';
+let dataChart;
+let currentChart;
+
+Chart.defaults.global.elements.point.hoverRadius = 7;
+const ctx = document.getElementById('dataChart').getContext('2d')
+dataChart = new Chart(ctx, config);
+const ctx2 = document.getElementById('currentChart').getContext('2d')
+currentChart = new Chart(ctx2, config2);
+function* foo(){
+    let index = 0;
+    while(index <= 2)
+      yield index++; // yield будет прерывать работу функции на этом месте
 }
+function updCharts (input) {
+    dataChart.data.datasets[0].data.push({
+        x: input[0].toFixed(2), 
+        y: input[1].toFixed(2)
+    })
+    dataChart.data.datasets[1].data.push({
+        x: input[0].toFixed(2), 
+        y: input[2].toFixed(2)
+    })
+    dataChart.update();
+    currentChart.data.datasets[0].data.push({
+        x: input[0].toFixed(2), 
+        y: input[3].toFixed(2)
+    })
+    currentChart.data.datasets[1].data.push({
+        x: input[0].toFixed(2), 
+        y: input[4].toFixed(2)
+    })
+    currentChart.update();
+}
+let prevPoint = 0;
+function collectValues (n,x0,x1,y) {
+    const collect = [x1,y[0],c.E([iC(x1),iL(x1)])*(1 + alpha*(Tair + y[0] - Tref)),iC(x1),iL(x1)]
+    result.push(collect);
+    setTimeout(() => {
+        updCharts(collect)
+    }, prevPoint + collect[2] ** 3 / 300);
+    prevPoint += collect[2] ** 3 / 300
+};
+const start = new Date();
+s.denseOutput = true;  
+s.solve(f, 0, 0, tn*2, s.grid(5, function collectResult(x1,y) {
+    collectValues (null,null,x1,y)
+}));
+const end = new Date();
+console.log('Время расчета:',end-start)
+console.log(result)
+
 export default app;
+
+
+
+
+
+
+
+// s.denseOutput = false;  
+// s.solve(f, 0, [0], tn, collectValues)
+// let [nextStartX] = result[result.length - 1]
+// let nextStartY = [result[result.length - 1][1]]
+// s.denseOutput = true;  
+// s.solve(f, nextStartX, nextStartY, tn + 100, s.grid(1, function collectResult(x1,y) {
+//     collectValues (null,null,x1,y)
+// }));
+// s.denseOutput = false;  
+// [nextStartX] = result[result.length - 1]
+// nextStartY = [result[result.length - 1][1]]
+// s.solve(f, nextStartX, nextStartY, tn * 2, collectValues)
