@@ -4,7 +4,6 @@ import { convectionObj } from './hConv'
 import createCircuit from './createCircuit'
 import initClampDE from './createDE'
 
-
 function createI(load) {
   let arr = load.values
     .filter(el => el.t || el.i)

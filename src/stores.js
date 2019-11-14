@@ -30,7 +30,7 @@ export const resistance = writable({
     units: 'мкОм',
     description: 'Переходное сопротивление',
   },
-  n: { name: 'n', value: 60, units: '1', description: 'Вертикальных ветвей' },
+  n: { name: 'n', value: 30, units: '1', description: 'Вертикальных ветвей' },
   Rwb: {
     name: 'Rwb',
     value: 12.462508462681646,

@@ -34,19 +34,15 @@
           rez.push(e.data.result)
           let timeNow = new Date()
           if (timeNow - timeLast >= 1000 / 30) {
-            $results[cur].result = [...$results[cur].result, ...rez]
-            ;[
-              progresses[progresses.findIndex(el => el.id === cur)].progress,
-            ] = rez[rez.length - 1]
+            $results[cur].result = [...$results[cur].result, ...rez];
+            [progresses[cur].progress] = rez[rez.length - 1]
             rez = []
             timeLast = new Date()
+
           }
         } else {
           $results[cur] = e.data.results
-          progresses[progresses.findIndex(el => el.id === cur)].progress =
-            progresses[progresses.findIndex(el => el.id === cur)].max
-          // progresses.splice(progresses.findIndex(el => el.id === cur),1);
-          // progressses = progresses;
+          progresses[cur].progress = progresses[cur].max
           isDone = true
           myWorker.terminate()
           inProgress -= 1
