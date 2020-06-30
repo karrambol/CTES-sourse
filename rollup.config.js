@@ -1,11 +1,12 @@
-import svelte from 'rollup-plugin-svelte'
-import resolve from 'rollup-plugin-node-resolve'
-import commonjs from 'rollup-plugin-commonjs'
-import livereload from 'rollup-plugin-livereload'
-import { terser } from 'rollup-plugin-terser'
-import rollup_start_dev from './rollup_start_dev'
+import svelte from 'rollup-plugin-svelte';
+import resolve from 'rollup-plugin-node-resolve';
+import commonjs from 'rollup-plugin-commonjs';
+import livereload from 'rollup-plugin-livereload';
+import { terser } from 'rollup-plugin-terser';
+import replace from 'rollup-plugin-replace';
+import rollup_start_dev from './rollup_start_dev';
 
-const production = !process.env.ROLLUP_WATCH
+const production = !process.env.ROLLUP_WATCH;
 
 export default [
   {
@@ -23,7 +24,7 @@ export default [
         // we'll extract any component CSS out into
         // a separate file — better for performance
         css: css => {
-          css.write('public/bundle.css')
+          css.write('public/bundle.css');
         },
       }),
 
@@ -50,6 +51,10 @@ export default [
       // If we're building for production (npm run build
       // instead of npm run dev), minify
       production && terser(),
+      replace({
+        exclude: ['node_modules/**', 'public'],
+        ENV: JSON.stringify(!production || 'development'),
+      }),
     ],
     watch: {
       clearScreen: false,
@@ -70,4 +75,4 @@ export default [
       commonjs(),
     ],
   },
-]
+];

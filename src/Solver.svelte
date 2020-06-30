@@ -19,7 +19,12 @@
 
   function solveWorker(cur, R) {
     if (window.Worker) {
-      const work = new Worker('./worker.js')
+      let work
+      if (ENV !== 'development') {
+        work = new Worker('./worker.js')
+      } else {
+        work = new Worker('./public/worker.js')
+      }
       $results[cur] = {
         task: {
           ...$task,
