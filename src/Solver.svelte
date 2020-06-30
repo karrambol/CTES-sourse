@@ -19,7 +19,7 @@
 
   function solveWorker(cur, R) {
     if (window.Worker) {
-      const work = new Worker('worker.js')
+      const work = new Worker('./worker.js')
       $results[cur] = {
         task: {
           ...$task,
