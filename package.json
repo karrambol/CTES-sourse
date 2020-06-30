@@ -1,7 +1,8 @@
 {
-  "name": "clamp-solver",
+  "name": "clamp-thermal-electrical-solver",
   "version": "1.0.0",
-  "description": "App for modeling of thermal processes in railway overhead elecric clamps",
+  "description": "Svelte app for calculation thermal and electric processes in railroad overhead contact lines conductive clamps",
+  "repository": "https://github.com/karrambol/CTES-sourse",
   "keywords": [
     "ordinary",
     "differential",
