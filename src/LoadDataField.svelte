@@ -1,18 +1,16 @@
 <script>
   import { loads } from './stores.js'
 
-  let expanded = true
+  let expanded = false
   function toggleExpanded() {
     expanded = !expanded
   }
 
-  const multiNumberRegExp = '(([0-9]*[.]?[0-9]+)[ ]?[,]?[ ]?)+'
   const singleNumberRegExp = '[0-9]*[.]?[0-9]+'
   $: $loads.loads.forEach(el => {
     if (el.values[el.values.length - 1].i || el.values[el.values.length - 1].t)
       el.values.push({ t: '', i: '' })
   })
-  $: console.log($loads)
 </script>
 
 <style>
@@ -33,7 +31,7 @@
     margin-left: 0;
   }
   .pad {
-    color: #09adad;
+    color: #eee;
     width: auto;
     height: 25px;
     padding-left: 10px;

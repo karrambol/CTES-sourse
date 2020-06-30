@@ -1,14 +1,13 @@
-// const matrix = require ('matrix-js');
 import matrix from 'matrix-js'
 
-function matInterchange(inMat, ind1, ind2) {
+function matInterchange (inMat, ind1, ind2) {
   const rez = new Array(inMat)
   const temp = rez[ind1]
   rez[ind1] = rez[ind2]
   rez[ind2] = temp
   return inMat
 }
-function matSize(m) {
+function matSize (m) {
   const s = []
   let mat = m
   while (Array.isArray(mat)) {
@@ -18,7 +17,7 @@ function matSize(m) {
   }
   return s
 }
-function matIdentity(size) {
+function matIdentity (size) {
   const str = new Array(size)
   str.fill(0)
   const rez = new Array(size)
@@ -31,7 +30,7 @@ function matIdentity(size) {
   })
 }
 
-function matInv(inp) {
+function matInv (inp) {
   const mat = inp()
   const siz = matSize(mat)
   const result = matIdentity(siz[0])
@@ -80,7 +79,7 @@ function matInv(inp) {
 }
 
 class Circuit {
-  constructor(rIni, aIni, arrJ) {
+  constructor (rIni, aIni, arrJ) {
     this.A = matrix(aIni)
     this.Y = matrix(
       rIni.map((el, i, arr) => arr.map((el2, i2) => (i2 === i ? 1 / el : 0)))
@@ -91,7 +90,7 @@ class Circuit {
     this.arrJ = arrJ
   }
 
-  U0(arri) {
+  U0 (arri) {
     this.J = this.arrJ.map((el, i) => el.map(e => e * arri[i]))
     this.J = this.J.reduce((acc, el) => acc.map((e, i2) => e + el[i2]))
     this.J = this.J.map(el => [el])
@@ -100,12 +99,12 @@ class Circuit {
     return matrix(this.invAyat.prod(this.minAj))
   }
 
-  U(arri) {
+  U (arri) {
     const rez = matrix(matrix(this.A.trans()).prod(this.U0(arri)))
     return rez
   }
 
-  E(arri) {
+  E (arri) {
     let rez = this.U(arri)()
     rez = rez.reduce((acc, el, i) => {
       return acc + el[0] ** 2 * this.Y(i, i)
@@ -113,13 +112,13 @@ class Circuit {
     return rez
   }
 
-  Es(arri) {
+  Es (arri) {
     const u0 = this.U0(arri)()
     const n = (u0.length + 1) / 3
     return u0[0][0] * arri[0] + u0[2 * n][0] * arri[1]
   }
 
-  I(arri) {
+  I (arri) {
     let rez = this.U(arri)()
     rez = matrix(rez.map((el, i) => el[0] * this.Y(i, i)))
     return rez

@@ -1,19 +1,25 @@
 <script>
-  import { task, resistance, thermal, results, loads } from './stores.js'
+  import {
+    task,
+    resistance,
+    thermal,
+    results,
+    loads,
+    solver,
+  } from './stores.js'
   import { Solver } from './odex'
   import { convectionObj } from './hConv'
   import createCircuit, { NMSearchVH } from './createCircuit'
   import initClampDE from './createDE'
   import { onMount } from 'svelte'
 
-  let progresses = []
-  let inProgress = 0
-
-  let current = 0
+  let progresses = [];
+  let inProgress = 0;
+  let current = 0;
 
   function solveWorker(cur, R) {
     if (window.Worker) {
-      const myWorker = new Worker('worker.js')
+      const work = new Worker('worker.js')
       $results[cur] = {
         task: {
           ...$task,
@@ -27,34 +33,35 @@
       progresses.push({
         id: cur,
         progress: 0,
-        max: $results[cur].task.tn.value + $results[cur].task.tn2.value,
+        max: $results[cur].task.tn.value,
       })
-      myWorker.onmessage = function fromWW(e) {
+      work.onmessage = function fromWW(e) {
         if (!e.data.isDone && !isDone) {
           rez.push(e.data.result)
           let timeNow = new Date()
           if (timeNow - timeLast >= 1000 / 30) {
-            $results[cur].result = [...$results[cur].result, ...rez];
-            [progresses[cur].progress] = rez[rez.length - 1]
+            $results[cur].result = [...$results[cur].result, ...rez]
+            ;[progresses[cur].progress] = rez[rez.length - 1]
             rez = []
             timeLast = new Date()
-
           }
         } else {
           $results[cur] = e.data.results
           progresses[cur].progress = progresses[cur].max
           isDone = true
-          myWorker.terminate()
+          work.terminate()
           inProgress -= 1
+          if (inProgress === 0) { localStorage.set}
         }
       }
       inProgress += 1
 
-      myWorker.postMessage({
+      work.postMessage({
         thermal: $thermal,
         resistance: { ...$resistance, Rc: R },
         task: { ...$task, Rc: R },
         loads: $loads.loads,
+        solver: $solver,
       })
     } else {
       console.log("Your browser doesn't support web workers.")
@@ -78,17 +85,14 @@
         $resistance,
         (itr, x, objF, centr, action, objEvals) => {
           console.log(
-            `${itr}. [${x[0]},${x[1]}] err = ${(objF * 100).toFixed(4)} % n = ${
-              $task.n.value
-            }, ${objEvals} evals, ${action}`
+            `${itr}. [${x[0]},${x[1]}] err = ${(objF * 100).toFixed(4)} % n = 
+            ${$task.n.value}, ${objEvals} evals, ${action}`
           )
         }
       )
       const end = new Date()
       console.log(rez, `${end - start}, sec`)
     }
-    // solveDE()
-
     // setTimeout(() => {optimize()},500);
   })
 </script>
@@ -126,7 +130,7 @@
         <div>
           {id + 1}.
           <progress {max} value={progress}>
-            <span id="value">{progress}/{max}</span>
+            <span class="value">{progress}/{max}</span>
           </progress>
         </div>
       {/if}

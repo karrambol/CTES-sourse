@@ -1,5 +1,5 @@
 <script>
-  import { results, currentResult } from './stores.js'
+  import { results, plotedResult, selectedResults } from './stores.js'
 
   let current = 0
 
@@ -7,7 +7,12 @@
     return `${item.name}=${item.value} ${item.units}`
   }
   function taskDecompose(t) {
-    return [itemDecompose(t.Rc), itemDecompose(t.Vwind)].join(', ')
+    return [
+      itemDecompose(t.Rc),
+      itemDecompose(t.Vwind),
+      itemDecompose(t.tn),
+      itemDecompose(t.Tair),
+    ].join(', ')
   }
 </script>
 
@@ -23,11 +28,11 @@
 </style>
 
 <p>Выбрать график результата:</p>
-
-<select bind:value={$currentResult}>
+<select bind:value={$plotedResult}>
   {#each $results as { task }, i}
     <option value={i}>{i + 1}. {taskDecompose(task)}</option>
   {:else}
     <option disabled selected>нет результатов</option>
   {/each}
 </select>
+

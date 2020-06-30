@@ -1,4 +1,4 @@
-const convection = function convection(
+const convection = function convection (
   v = 10,
   t = 293.15,
   d = 0.05,
@@ -8,7 +8,7 @@ const convection = function convection(
   let Dcyl = d
   let Tair = t
   let pA = p
-  function kAir(T) {
+  function kAir (T) {
     if (T > 1000) {
       return kAir(1000)
     }
@@ -23,7 +23,7 @@ const convection = function convection(
       1.88168e-14 * T ** 4
     )
   }
-  function cpAir(T) {
+  function cpAir (T) {
     if (T < 100) {
       return cpAir(100)
     }
@@ -57,7 +57,7 @@ const convection = function convection(
     }
     return cpAir(3000)
   }
-  function rhoAir(press, T) {
+  function rhoAir (press, T) {
     if (T <= 80) {
       return 352.716 * 80 ** -1
     }
@@ -66,7 +66,7 @@ const convection = function convection(
     }
     return 352.716 * 3000 ** -1
   }
-  function etaAir(T) {
+  function etaAir (T) {
     if (T < 120) {
       return etaAir(120)
     }
@@ -90,24 +90,23 @@ const convection = function convection(
     }
     return etaAir(2150)
   }
-  function Re(Tinp) {
+  function Re (Tinp) {
     return (rhoAir(pA, Tinp) * Vwind * Dcyl) / etaAir(Tinp)
   }
-  function Pr(Tinp) {
+  function Pr (Tinp) {
     return (etaAir(Tinp) * cpAir(Tinp)) / kAir(Tinp)
   }
-  // eslint-disable-next-line no-underscore-dangle
-  function hConvFunc(Tinp, v1, t1, d1, p1) {
-    if (v1) {
+  function hConvFunc (Tinp, v1, t1, d1, p1) {
+    if (v1 !== undefined) {
       Vwind = v1
     }
-    if (d1) {
+    if (d1 !== undefined) {
       Dcyl = d1
     }
-    if (t1) {
+    if (t1 !== undefined) {
       Tair = t1
     }
-    if (p1) {
+    if (p1 !== undefined) {
       pA = p1
     }
     const Tfilm = (Tinp + Tair) / 2
@@ -124,7 +123,7 @@ const convection = function convection(
   }
 
   const hConvObj = {
-    setCondition: function setCondition(
+    setCondition: function setCondition (
       v1 = Vwind,
       t1 = Tair,
       d1 = Dcyl,
@@ -139,13 +138,9 @@ const convection = function convection(
   return Object.assign(hConvFunc, hConvObj)
 }
 
-export function convectionObj(obj) {
-  return convection(
-    obj.Vwind.value,
-    obj.Tair.unit === 'К' ? obj.Tair.value : obj.Tair.value + 273.15,
-    obj.Dcyl.value,
-    obj.pA.value
-  )
+export function convectionObj (obj) {
+  const Tair = obj.Tair.unit === 'К' ? obj.Tair.value : obj.Tair.value + 273.15
+  return convection(obj.Vwind.value, Tair, obj.Dcyl.value)
 }
 
 export default convection

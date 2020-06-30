@@ -741,14 +741,14 @@
 	  return Math.log(x) / Math.LN10
 	};
 	exports.Solver = Solver;
-
+	//# sourceMappingURL=odex.js.map
 	});
 
 	var odex$1 = unwrapExports(odex);
 	var odex_1 = odex.Outcome;
 	var odex_2 = odex.Solver;
 
-	const convection = function convection(
+	const convection = function convection (
 	  v = 10,
 	  t = 293.15,
 	  d = 0.05,
@@ -758,7 +758,7 @@
 	  let Dcyl = d;
 	  let Tair = t;
 	  let pA = p;
-	  function kAir(T) {
+	  function kAir (T) {
 	    if (T > 1000) {
 	      return kAir(1000)
 	    }
@@ -773,7 +773,7 @@
 	      1.88168e-14 * T ** 4
 	    )
 	  }
-	  function cpAir(T) {
+	  function cpAir (T) {
 	    if (T < 100) {
 	      return cpAir(100)
 	    }
@@ -807,7 +807,7 @@
 	    }
 	    return cpAir(3000)
 	  }
-	  function rhoAir(press, T) {
+	  function rhoAir (press, T) {
 	    if (T <= 80) {
 	      return 352.716 * 80 ** -1
 	    }
@@ -816,7 +816,7 @@
 	    }
 	    return 352.716 * 3000 ** -1
 	  }
-	  function etaAir(T) {
+	  function etaAir (T) {
 	    if (T < 120) {
 	      return etaAir(120)
 	    }
@@ -840,24 +840,23 @@
 	    }
 	    return etaAir(2150)
 	  }
-	  function Re(Tinp) {
+	  function Re (Tinp) {
 	    return (rhoAir(pA, Tinp) * Vwind * Dcyl) / etaAir(Tinp)
 	  }
-	  function Pr(Tinp) {
+	  function Pr (Tinp) {
 	    return (etaAir(Tinp) * cpAir(Tinp)) / kAir(Tinp)
 	  }
-	  // eslint-disable-next-line no-underscore-dangle
-	  function hConvFunc(Tinp, v1, t1, d1, p1) {
-	    if (v1) {
+	  function hConvFunc (Tinp, v1, t1, d1, p1) {
+	    if (v1 !== undefined) {
 	      Vwind = v1;
 	    }
-	    if (d1) {
+	    if (d1 !== undefined) {
 	      Dcyl = d1;
 	    }
-	    if (t1) {
+	    if (t1 !== undefined) {
 	      Tair = t1;
 	    }
-	    if (p1) {
+	    if (p1 !== undefined) {
 	      pA = p1;
 	    }
 	    const Tfilm = (Tinp + Tair) / 2;
@@ -874,7 +873,7 @@
 	  }
 
 	  const hConvObj = {
-	    setCondition: function setCondition(
+	    setCondition: function setCondition (
 	      v1 = Vwind,
 	      t1 = Tair,
 	      d1 = Dcyl,
@@ -889,13 +888,9 @@
 	  return Object.assign(hConvFunc, hConvObj)
 	};
 
-	function convectionObj(obj) {
-	  return convection(
-	    obj.Vwind.value,
-	    obj.Tair.unit === 'К' ? obj.Tair.value : obj.Tair.value + 273.15,
-	    obj.Dcyl.value,
-	    obj.pA.value
-	  )
+	function convectionObj (obj) {
+	  const Tair = obj.Tair.unit === 'К' ? obj.Tair.value : obj.Tair.value + 273.15;
+	  return convection(obj.Vwind.value, Tair, obj.Dcyl.value)
 	}
 
 	/**
@@ -1478,7 +1473,7 @@
 	                // skip as no row elimination is needed
 	                continue;
 	            }
-	            
+
 	            let temp = rational_1(-rationalized[j][i].num, rationalized[j][i].den);
 	            for (let k = 0; k < siz[1]; k++) {
 	                rationalized[j][k] = temp.mul(rationalized[i][k]).add(rationalized[j][k]);
@@ -1486,6 +1481,7 @@
 	            }
 	        }
 	    }
+
 	    // Further reduction to convert rationalized to identity
 	    let last = siz[0] - 1;
 	    if (rationalized[last][last].num !== 1 || rationalized[last][last] !== 1) {
@@ -1495,6 +1491,7 @@
 	            result[last][col] = result[last][col].div(factor);
 	        }
 	    }
+
 	    for (let i = siz[0] - 1; i > 0; i--) {
 	        for (let j = i - 1; j >= 0; j--) {
 	            let temp = rational_1(-rationalized[j][i].num, rationalized[j][i].den);
@@ -1601,16 +1598,14 @@
 	    return result;
 	}
 
-	// const matrix = require ('matrix-js');
-
-	function matInterchange(inMat, ind1, ind2) {
+	function matInterchange (inMat, ind1, ind2) {
 	  const rez = new Array(inMat);
 	  const temp = rez[ind1];
 	  rez[ind1] = rez[ind2];
 	  rez[ind2] = temp;
 	  return inMat
 	}
-	function matSize(m) {
+	function matSize (m) {
 	  const s = [];
 	  let mat = m;
 	  while (Array.isArray(mat)) {
@@ -1620,7 +1615,7 @@
 	  }
 	  return s
 	}
-	function matIdentity(size) {
+	function matIdentity (size) {
 	  const str = new Array(size);
 	  str.fill(0);
 	  const rez = new Array(size);
@@ -1633,7 +1628,7 @@
 	  })
 	}
 
-	function matInv(inp) {
+	function matInv (inp) {
 	  const mat = inp();
 	  const siz = matSize(mat);
 	  const result = matIdentity(siz[0]);
@@ -1682,7 +1677,7 @@
 	}
 
 	class Circuit {
-	  constructor(rIni, aIni, arrJ) {
+	  constructor (rIni, aIni, arrJ) {
 	    this.A = lib(aIni);
 	    this.Y = lib(
 	      rIni.map((el, i, arr) => arr.map((el2, i2) => (i2 === i ? 1 / el : 0)))
@@ -1693,7 +1688,7 @@
 	    this.arrJ = arrJ;
 	  }
 
-	  U0(arri) {
+	  U0 (arri) {
 	    this.J = this.arrJ.map((el, i) => el.map(e => e * arri[i]));
 	    this.J = this.J.reduce((acc, el) => acc.map((e, i2) => e + el[i2]));
 	    this.J = this.J.map(el => [el]);
@@ -1702,12 +1697,12 @@
 	    return lib(this.invAyat.prod(this.minAj))
 	  }
 
-	  U(arri) {
+	  U (arri) {
 	    const rez = lib(lib(this.A.trans()).prod(this.U0(arri)));
 	    return rez
 	  }
 
-	  E(arri) {
+	  E (arri) {
 	    let rez = this.U(arri)();
 	    rez = rez.reduce((acc, el, i) => {
 	      return acc + el[0] ** 2 * this.Y(i, i)
@@ -1715,89 +1710,89 @@
 	    return rez
 	  }
 
-	  Es(arri) {
+	  Es (arri) {
 	    const u0 = this.U0(arri)();
 	    const n = (u0.length + 1) / 3;
 	    return u0[0][0] * arri[0] + u0[2 * n][0] * arri[1]
 	  }
 
-	  I(arri) {
+	  I (arri) {
 	    let rez = this.U(arri)();
 	    rez = lib(rez.map((el, i) => el[0] * this.Y(i, i)));
 	    return rez
 	  }
 	}
 
-	function createGraph(n) {
+	function createGraph (n) {
 	  const nodes = n * 3;
 	  const branches = 5 * n - 3;
-	  const string = new Array(branches);
-	  string.fill(0);
+	  const row = new Array(branches);
+	  row.fill(0);
 	  let graph = new Array(nodes - 1);
-	  graph.fill(string);
+	  graph.fill(row);
 	  graph = graph.map((el, m) => {
 	    return el.map((el2, i) => {
 	      // Ток вытекает в узел справа
-	      if (m <= n - 2 && i === m) return -1
-	      if (m >= n && m <= 2 * n - 2 && i === m + n - 1) return -1
-	      if (m >= 2 * n && m <= 3 * n - 2 && i === m + 2 * n - 2) return -1
+	      if (m <= n - 2 && i === m) return -1;
+	      if (m >= n && m <= 2 * n - 2 && i === m + n - 1) return -1;
+	      if (m >= 2 * n && m <= 3 * n - 2 && i === m + 2 * n - 2) return -1;
 	      // Ток втекает из узла слева
-	      if (m >= 1 && m <= n - 1 && i === m - 1) return 1
-	      if (m >= n + 1 && m <= 2 * n - 1 && i === m + n - 2) return 1
-	      if (m >= 2 * n + 1 && m <= 3 * n - 1 && i === m + 2 * n - 3) return 1
+	      if (m >= 1 && m <= n - 1 && i === m - 1) return 1;
+	      if (m >= n + 1 && m <= 2 * n - 1 && i === m + n - 2) return 1;
+	      if (m >= 2 * n + 1 && m <= 3 * n - 1 && i === m + 2 * n - 3) return 1;
 	      // Ток вытекает в узел снизу
-	      if (m >= 0 && m <= n - 1 && i === m + n - 1) return -1
-	      if (m >= n && m <= 2 * n - 1 && i === m + 2 * n - 2) return -1
+	      if (m >= 0 && m <= n - 1 && i === m + n - 1) return -1;
+	      if (m >= n && m <= 2 * n - 1 && i === m + 2 * n - 2) return -1;
 	      // Ток втекает из узла сверху
-	      if (m >= n && m <= 2 * n - 1 && i === m - 1) return 1
-	      if (m >= 2 * n && m <= 3 * n - 1 && i === m + n - 2) return 1
-	      return 0
-	    })
+	      if (m >= n && m <= 2 * n - 1 && i === m - 1) return 1;
+	      if (m >= 2 * n && m <= 3 * n - 1 && i === m + n - 2) return 1;
+	      return 0;
+	    });
 	  });
-	  return graph
+	  return graph;
 	}
 
-	function createR(wb, wt, clampV, clampH, cont, n) {
+	function createR (wb, wt, clampV, clampH, cont, n) {
 	  const cb = cont / 2;
 	  const ct = cont / 2;
 	  const branches = 5 * n - 3;
 	  let R = new Array(branches);
 	  R.fill(0);
 	  R = R.map((el, i) => {
-	    if (i <= n - 2) return wt / (n - 1)
-	    if (i <= 2 * n - 1) return ct * n + (clampV * n) / 2
-	    if (i <= 3 * n - 3) return clampH / (n - 1)
-	    if (i <= 4 * n - 3) return cb * n + (clampV * n) / 2
-	    if (i <= 5 * n - 4) return wb / (n - 1)
-	    return 0
+	    if (i <= n - 2) return wt / (n - 1);
+	    if (i <= 2 * n - 1) return ct * n + (clampV * n) / 2;
+	    if (i <= 3 * n - 3) return clampH / (n - 1);
+	    if (i <= 4 * n - 3) return cb * n + (clampV * n) / 2;
+	    if (i <= 5 * n - 4) return wb / (n - 1);
+	    return 0;
 	  });
-	  return R
+	  return R;
 	}
 
-	function createICJ(n) {
+	function createICJ (n) {
 	  const branches = 5 * n - 3;
-	  let string = new Array(branches);
-	  string.fill(0);
-	  string = string.map((el, i) => {
-	    if (i === n - 1) return 1
-	    if (i === 3 * n - 2) return 1
-	    if (i >= 4 * n - 2) return 1
-	    return 0
+	  let row = new Array(branches);
+	  row.fill(0);
+	  row = row.map((el, i) => {
+	    if (i === n - 1) return 1;
+	    if (i === 3 * n - 2) return 1;
+	    if (i >= 4 * n - 2) return 1;
+	    return 0;
 	  });
-	  return string
+	  return row;
 	}
-	function createILJ(n) {
+	function createILJ (n) {
 	  const branches = 5 * n - 3;
-	  let string = new Array(branches);
-	  string.fill(0);
-	  string = string.map((el, i) => {
-	    if (i >= 4 * n - 2) return 1
-	    return 0
+	  let row = new Array(branches);
+	  row.fill(0);
+	  row = row.map((el, i) => {
+	    if (i >= 4 * n - 2) return 1;
+	    return 0;
 	  });
-	  return string
+	  return row;
 	}
 
-	function createCircuit(obj) {
+	function createCircuit (obj) {
 	  const n = parseInt(obj.n.value, 10);
 	  const a = createGraph(n);
 	  const iCJ = createICJ(n);
@@ -1806,74 +1801,90 @@
 	    el.units === 'мкОм' ? el.value * 1e-6 : el.value * 1
 	  );
 	  const R = createR(...argArr);
-	  return new Circuit(R, a, [iCJ, iLJ])
+	  return new Circuit(R, a, [iCJ, iLJ]);
 	}
 
-	function initClampDE(t, iC, iL, hConv, c, obj) {
+	function initClampDE (t, iC, iL, hConv, c, obj) {
 	  const delta = 5.670367e-8; // Постоянная Стефана — Больцмана
-	  const alpha = obj.alpha.value; //
-	  const Tref = obj.Tref.value;
-	  const Fz = 0.012747731984462128; // Взято из геометрии
+	  const alpha = obj.alpha.value; // Температурная постоянная сопротивления
+	  const Tref = obj.Tref.units === 'K' ? obj.Tref.value : obj.Tref.value + 273.15;
+	  const Fz = obj.Fc.value; // Площадь внешней поверхности зажима
 	  const Tair = t;
-	  const varEpsilon = 0.6;
-	  return function DE(x, y1 = [0]) {
+	  const epsilon = obj.epsilon.value; // Коэффициент черноты поверхности
+	  return function DE (x, y1 = [0]) {
 	    const [y] = y1;
 	    const E = c.Es([iC(x), iL(x)]) * (1 + alpha * (Tair + y - Tref));
-
 	    const Qconv = hConv(y + Tair) * Fz * y;
-	    const Qrad = varEpsilon * Fz * delta * ((y + Tair) ** 4 - Tair ** 4);
+	    const Qrad = epsilon * Fz * delta * ((y + Tair) ** 4 - Tair ** 4);
 	    const Qtot = Qconv + Qrad;
-
 	    const rez = (E - Qtot) / 255.62151205326109;
-	    // console.log(
-	    //     y,
-	    //     E,
-	    //     hConv( y + Tair ),
-	    //     Qconv,
-	    //     Qrad,
-	    //     Qtot
-	    // )
 	    return [rez]
 	  }
 	}
 
-	/* eslint-disable no-console */
-
-	function createI(load) {
+	function createI (load) {
 	  let arr = load.values
 	    .filter(el => el.t || el.i)
 	    .map(el => {
-	      return { t: parseFloat(el.t), i: parseFloat(el.i) }
+	      return { t: parseFloat(el.t), i: parseFloat(el.i) };
 	    });
 	  if (load.option === 'const')
-	    return function iConst() {
-	      return arr[0].i
-	    }
+	    return function iConst () {
+	      return arr[0].i;
+	    };
 	  arr = arr.reverse();
 	  if (load.option === 'step')
-	    return function iStep(t) {
-	      if (t >= arr[0].t) return arr[0].i
-	      return arr.find(el => el.t <= t).i
-	    }
+	    return function iStep (t) {
+	      if (t >= arr[0].t) return arr[0].i;
+	      return arr.find(el => el.t <= t).i;
+	    };
 
 	  if (load.option === 'linear')
-	    return function iLinear(t) {
-	      if (t >= arr[0].t) return arr[0].i
+	    return function iLinear (t) {
+	      if (t >= arr[0].t) return arr[0].i;
 	      const ind = arr.findIndex(el => el.t <= t);
 	      const i0 = arr[ind].i;
 	      const i1 = arr[ind - 1].i;
 	      const t0 = arr[ind].t;
 	      const t1 = arr[ind - 1].t;
 	      const i = i0 + ((t - t0) * (i1 - i0)) / (t1 - t0);
-	      return i
-	    }
-	  return null
+	      return i;
+	    };
+	  return null;
 	}
-
-	function solveDE({ thermal, resistance, task, loads }) {
-	  // console.log(JSON.stringify(resistance))
+	function parseValues (obj) {
+	  return Object.entries(obj).reduce((acc, el) => {
+	    acc[el[0]] = { ...el[1], value: parseFloat(el[1].value) };
+	    return acc;
+	  }, {});
+	}
+	let x0 = 0;
+	let y0 = 0;
+	function runSolver (fn, solver, solTask, callback) {
+	  const a = solver.solve(
+	    fn,
+	    x0,
+	    y0,
+	    solTask.t,
+	    solver.grid(solTask.step, function collectResult (x1, y) {
+	      callback(null, null, x1, y);
+	    })
+	  );
+	  x0 = a.xEnd;
+	  y0 = a.y;
+	}
+	function solveDE ({ thermal, resistance, task, loads, solver }) {
+	  thermal = parseValues(thermal);
+	  solver.values = solver.values
+	    .map(el => {
+	      return { t: parseFloat(el.t), step: parseFloat(el.step) };
+	    })
+	    .filter(el => el.t && el.step);
 	  const alpha = thermal.alpha.value;
-	  const Tair = thermal.Tair.value + 273.15;
+	  const Tair =
+	    thermal.Tair.unit === 'К'
+	      ? thermal.Tair.value
+	      : thermal.Tair.value + 273.15;
 	  const Tref = thermal.Tref.value;
 	  const results = [];
 	  const iL = createI(loads[0]);
@@ -1882,7 +1893,7 @@
 	  const c = createCircuit(resistance);
 	  const f = initClampDE(Tair, iC, iL, hConv, c, thermal);
 	  results[0] = { task, result: [] };
-	  function collectValues(n, x0, x1, y) {
+	  function collectValues (n, x0, x1, y) {
 	    const collect = [
 	      x1,
 	      y[0],
@@ -1905,32 +1916,14 @@
 	  s.absoluteTolerance = 1e-12;
 	  s.relativeTolerance = 1e-12;
 	  s.denseOutput = true;
-	  const {
-	    xEnd: x0,
-	    y: [y0],
-	  } = s.solve(
-	    f,
-	    0,
-	    [0],
-	    task.tn.value,
-	    s.grid(10, function collectResult(x1, y) {
-	      collectValues(null, null, x1, y);
-	    })
-	  );
-	  s.solve(
-	    f,
-	    x0,
-	    y0,
-	    task.tn.value + task.tn2.value,
-	    s.grid(1, function collectResult(x1, y) {
-	      collectValues(null, null, x1, y);
-	    })
-	  );
+	  solver.values.forEach(el => {
+	    runSolver(f, s, el, collectValues);
+	  });
 	  const end = new Date();
 	  console.log('Время расчета:', end - start);
 	  postMessage({ results: results[0], isDone: true });
 	}
-	onmessage = function onMessage(e) {
+	onmessage = function onMessage (e) {
 	  solveDE(e.data);
 	};
 

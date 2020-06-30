@@ -1,20 +1,13 @@
 <script>
-  import {
-    taskData,
-    task,
-    resistance,
-    results,
-    currentResult,
-  } from './stores.js'
+  import { task, resistance, results, plotedResult } from './stores.js'
   import Solver from './Solver.svelte'
   import Chart from './Chart.svelte'
   import ResultSelector from './ResultSelector.svelte'
+  import ThermalDataField from './ThermalDataField.svelte'
   import CircuitDataField from './CircuitDataField.svelte'
   import LoadDataField from './LoadDataField.svelte'
-
-  let current
+  import SolverDataField from './SolverDataField.svelte'
 </script>
-
 <style>
   .container {
     display: flex;
@@ -31,10 +24,6 @@
     padding-left: 10px;
     border-bottom: 2px solid #333;
   }
-  p {
-    margin: 0 0 0.3em 0;
-    margin-left: 0;
-  }
   .params-wrapper {
     background-color: #118073;
     padding: 10px;
@@ -44,22 +33,6 @@
     display: flex;
     flex-direction: column;
     overflow: auto;
-  }
-  .param:last-of-type {
-    margin-bottom: 0.8em;
-  }
-  input {
-    width: 220px;
-    border-radius: 5px;
-  }
-  .name-holder {
-    display: inline-block;
-    text-align: center;
-    font-style: italic;
-    font-weight: bold;
-    margin-right: 5px;
-    width: 30px;
-    text-align: right;
   }
   table {
     margin: 20px auto 20px auto;
@@ -95,18 +68,10 @@
 <div class="container">
   <div class="params-wrapper">
     <h2>Исходные данные</h2>
-    {#each $taskData as { name, value, units, description }}
-      {#if name !== 'Rc'}
-        <div class="param">
-          <p>{description}:</p>
-          <label class="name-holder">{name}</label>
-          <input type="number" bind:value />
-          {units}
-        </div>
-      {/if}
-    {/each}
+    <ThermalDataField />
     <CircuitDataField />
     <LoadDataField />
+    <SolverDataField />
     <Solver />
     <ResultSelector />
   </div>
@@ -118,7 +83,7 @@
       <tr>
         <th />
         {#each $results as { task }, id}
-          <th class:current-head-top={id === $currentResult} colspan="2">
+          <th class:current-head-top={id === $plotedResult} colspan="2">
             {id + 1}) {task.Rc.value}, {task.Rc.units}, {task.Vwind.value}, {task.Vwind.units}
           </th>
         {/each}
@@ -126,8 +91,8 @@
       <tr>
         <th>t, с</th>
         {#each $results as result, id}
-          <th class:current-head={id === $currentResult}>T{id + 1}, °С</th>
-          <th class:current-head={id === $currentResult}>E{id + 1}, Вт</th>
+          <th class:current-head={id === $plotedResult}>T{id + 1}, °С</th>
+          <th class:current-head={id === $plotedResult}>E{id + 1}, Вт</th>
         {/each}
       </tr>
       {#each $results[0].result as point, i}

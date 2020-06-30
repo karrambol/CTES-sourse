@@ -45,9 +45,6 @@ input:focus, select:focus {
 	outline: #085047 solid 3px;
 }
 
-input[type="range"] {
-	height: 0;
-}
 
 button {
 	color: #333;

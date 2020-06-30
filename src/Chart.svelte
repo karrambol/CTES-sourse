@@ -1,6 +1,6 @@
 <script>
   import Chart from 'chart.js'
-  import { results, result, currentResult } from './stores.js'
+  import { results, result, plottedResult } from './stores.js'
   import { dataConfig, currentConfig } from './chartConfigs.js'
   import { onMount } from 'svelte'
 
@@ -12,7 +12,7 @@
 
   let timeoutIDs = []
   $: current = $results.length - 1
-  $: $currentResult = current
+  $: $plottedResult = current
   let request
 
   onMount(() => {

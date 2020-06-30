@@ -82,7 +82,7 @@ export const dataConfig = {
       ],
     },
   },
-}
+};
 export const currentConfig = {
   type: 'line',
   data: {
@@ -166,4 +166,4 @@ export const currentConfig = {
       ],
     },
   },
-}
+};

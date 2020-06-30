@@ -1,5 +1,5 @@
 <script>
-  import { resistance } from './stores.js'
+  import { thermal } from './stores.js'
 
   let expanded = false
   function toggleExpanded() {
@@ -14,6 +14,7 @@
     width: 220px;
     border-radius: 5px;
   }
+
   input:invalid {
     outline: #a31818 solid 3px;
   }
@@ -69,26 +70,17 @@
 
 <div class="CirquitDataField-container">
   <div class="pad" class:pad-expanded={expanded} on:click={toggleExpanded}>
-    <p>{expanded ? '▼' : '⏵'} Параметры схемы</p>
+    <p>{expanded ? '▼' : '⏵'} Тепловые параметры</p>
     <span>{expanded ? 'свернуть' : 'развернуть...'}</span>
   </div>
   <div class="params-container">
-    {#each Object.values($resistance).filter(el => el.name === 'Rc' || expanded) as { name, value, units, description }}
-      {#if name === 'Rc'}
-        <div class="param">
-          <p>{description}:</p>
-          <div class="name-holder">{name}</div>
-          <input type="text" pattern={multiNumberRegExp} bind:value />
-          {units}
-        </div>
-      {:else}
-        <div class="param">
-          <p>{description}:</p>
-          <div class="name-holder">{name}</div>
-          <input type="text" pattern={singleNumberRegExp} bind:value />
-          {units}
-        </div>
-      {/if}
+    {#each Object.values($thermal).filter(el => el.name === 'Vw' || el.name === 'Tair' || expanded) as { name, value, units, description }}
+      <div class="param">
+        <p>{description}:</p>
+        <div class="name-holder">{name}</div>
+        <input type="text" pattern={singleNumberRegExp} bind:value />
+        {units}
+      </div>
     {/each}
   </div>
 </div>

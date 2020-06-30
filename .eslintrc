@@ -3,18 +3,12 @@
   "env": {
     "browser": true
   },
-  "extends": ["airbnb-base","prettier"],
+  "extends": ["airbnb-base", "prettier"],
   "plugins": ["svelte3"],
   "overrides": [
     {
       "files": ["**/*.svelte"],
       "processor": "svelte3/svelte3"
     }
-  ],
-  "rules": {
-    // ...
-  },
-  "settings": {
-    // ...
-  }
+  ]
 }

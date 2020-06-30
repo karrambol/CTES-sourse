@@ -1,74 +1,38 @@
-import { writable, derived } from 'svelte/store'
-
-export const taskData = writable([
-  { name: 'Vw', value: 10, units: 'м/с', description: 'Скорость ветра' },
-  {
-    name: 'Rc',
-    value: '16,20,30,300',
-    units: 'мкОм',
-    description: 'Переходное сопротивление',
-  },
-  { name: 'T', value: 20, units: '°С', description: 'Температура воздуха' },
-  {
-    name: 't',
-    value: 2000,
-    units: 'c',
-    description: 'Расчётное время с шагом 10 с',
-  },
-  {
-    name: 't2',
-    value: 200,
-    units: 'c',
-    description: 'Расчётное время с шагом 1 с',
-  },
-])
+import { writable, derived } from 'svelte/store';
 
 export const resistance = writable({
   Rc: {
     name: 'Rc',
-    value: '16, 20, 30, 300',
+    value: '16,116,216,316',
     units: 'мкОм',
     description: 'Переходное сопротивление',
   },
-  n: { name: 'n', value: 30, units: '1', description: 'Вертикальных ветвей' },
+  n: { name: 'n', value: 8, units: '1', description: 'Вертикальных ветвей' },
   Rwb: {
     name: 'Rwb',
-    value: 12.462508462681646,
+    value: '12.462508462681646',
     units: 'мкОм',
     description: 'Сопротивление нижнего провода',
   },
   Rwt: {
     name: 'Rwt',
-    value: 13.324356266166885,
+    value: '13.324356266166885',
     units: 'мкОм',
     description: 'Сопротивление верхнего провода',
   },
   Rv: {
     name: 'Rv',
-    value: 1.39080899410521,
+    value: '1.39080899410521',
     units: 'мкОм',
     description: 'Сопротивление зажима вертикальное',
   },
   Rh: {
     name: 'Rh',
-    value: 7.219355450344615,
+    value: '7.219355450344615',
     units: 'мкОм',
     description: 'Сопротивление зажима горизонтальное',
   },
-})
-export const task = derived(
-  [taskData, resistance],
-  ([$taskData, $resistance]) => {
-    return {
-      Vwind: $taskData[0],
-      Rc: $resistance.Rc,
-      Tair: $taskData[2],
-      n: $resistance,
-      tn: $taskData[3],
-      tn2: $taskData[4],
-    }
-  }
-)
+});
 
 export const loads = writable({
   options: [
@@ -90,64 +54,114 @@ export const loads = writable({
       values: [
         { t: '0', i: '0' },
         { t: '2000', i: '0' },
-        { t: '2100', i: '1050' },
-        { t: '2200', i: '0' },
+        { t: '2010', i: '1050' },
+        { t: '2020', i: '0' },
       ],
       units: ['с', 'А'],
       description: 'Поперечный ток',
     },
   ],
-})
+});
 
-export const thermal = derived(task, $task => {
-  return {
-    Vwind: $task.Vwind,
-    deltaKC: { name: 'deltaKC', value: 273.15, units: 'К' },
-    pA: { name: 'pA', value: 101325, units: 'Па' },
-    alpha: { name: 'alpha', value: 3.9e-3, units: '1/К' },
-    Tair: $task.Tair,
-    Dcyl: { name: 'Dcyl', value: 0.05, units: 'м' },
-    Tref: { name: 'Tref', value: 298, units: 'К' },
+export const thermal = writable({
+  Vwind: { name: 'Vw', value: 10, units: 'м/с', description: 'Скорость ветра' },
+  Tair: {
+    name: 'Tair',
+    value: '20',
+    units: '°С',
+    description: 'Температура воздуха',
+  },
+  epsilon: {
+    name: 'ε',
+    value: '0.6',
+    units: '1',
+    description: 'Коэффициент излучения',
+  },
+  Dcyl: { name: 'Dc', value: 0.05, units: 'м', description: 'Высота зажима' },
+  Fc: {
+    name: 'Fc',
+    value: '0.012747731984462128',
+    units: 'м^2',
+    description: 'Площадь поверхности зажима',
+  },
+  alpha: {
+    name: 'α',
+    value: '0.0039',
+    units: '1/К',
+    description: 'Температурный коэф. сопротивления',
+  },
+  Tref: {
+    name: 'Tref',
+    value: '298',
+    units: 'K',
+    description: 'Исходная температура сопротивления',
+  },
+});
+export const solver = writable({
+  name: 's',
+  values: [
+    { id: 0, t: '2000', step: '10' },
+    { id: 1, t: '2020', step: '0.5' },
+    { id: 2, t: '', step: '' },
+  ],
+  units: ['с', 'c'],
+  description: 'Настройки шага решателя',
+});
+export const task = derived(
+  [thermal, resistance, solver],
+  ([$thermal, $resistance, $solver]) => {
+    return {
+      Vwind: $thermal.Vwind,
+      Rc: $resistance.Rc,
+      Tair: $thermal.Tair,
+      n: $resistance.n,
+      tn: {
+        name: 't',
+        value: $solver.values[$solver.values.length - 2].t,
+        units: 'с',
+        description: 'Конец расчета',
+      },
+    };
   }
-})
-
-export const results = writable([])
-export const currentResult = writable(0)
+);
+export const results = writable([]);
+export const plottedResult = writable(0);
+export const selectedResults = writable([]);
 
 export const result = derived(
-  [results, currentResult],
-  ([$results, $currentResult]) => {
-    if ($results[$currentResult]) {
+  [results, plottedResult],
+  ([$results, $plottedResult]) => {
+    if ($results[$plottedResult]) {
       return {
-        T: $results[$currentResult].result.map(function mapEl1(el) {
+        T: $results[$plottedResult].result.map(function mapEl1 (el) {
           return {
             x: el[0],
             y: el[1],
-          }
+          };
         }),
-        E: $results[$currentResult].result.map(function mapEl2(el) {
+        E: $results[$plottedResult].result.map(function mapEl2 (el) {
           return {
             x: el[0],
             y: el[2],
-          }
+          };
         }),
-        I1: $results[$currentResult].result.map(function mapEl3(el) {
+        I1: $results[$plottedResult].result.map(function mapEl3 (el) {
           return {
             x: el[0],
             y: el[3],
-          }
+          };
         }),
-        I2: $results[$currentResult].result.map(function mapEl4(el) {
+        I2: $results[$plottedResult].result.map(function mapEl4 (el) {
           return {
             x: el[0],
             y: el[4],
-          }
+          };
         }),
-      }
+      };
     }
-    return []
+    return [];
   }
-)
+);
 
 /*
 Подобранные сопротивления:
