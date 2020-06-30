@@ -1,5 +1,5 @@
 <script>
-  import { results, plotedResult, selectedResults } from './stores.js'
+  import { results, plottedResult, selectedResults } from './stores.js'
 
   let current = 0
 
@@ -28,7 +28,7 @@
 </style>
 
 <p>Выбрать график результата:</p>
-<select bind:value={$plotedResult}>
+<select bind:value={$plottedResult}>
   {#each $results as { task }, i}
     <option value={i}>{i + 1}. {taskDecompose(task)}</option>
   {:else}

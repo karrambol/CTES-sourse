@@ -1,5 +1,5 @@
 <script>
-  import { task, resistance, results, plotedResult } from './stores.js'
+  import { task, resistance, results, plottedResult } from './stores.js'
   import Solver from './Solver.svelte'
   import Chart from './Chart.svelte'
   import ResultSelector from './ResultSelector.svelte'
@@ -83,7 +83,7 @@
       <tr>
         <th />
         {#each $results as { task }, id}
-          <th class:current-head-top={id === $plotedResult} colspan="2">
+          <th class:current-head-top={id === $plottedResult} colspan="2">
             {id + 1}) {task.Rc.value}, {task.Rc.units}, {task.Vwind.value}, {task.Vwind.units}
           </th>
         {/each}
@@ -91,8 +91,8 @@
       <tr>
         <th>t, с</th>
         {#each $results as result, id}
-          <th class:current-head={id === $plotedResult}>T{id + 1}, °С</th>
-          <th class:current-head={id === $plotedResult}>E{id + 1}, Вт</th>
+          <th class:current-head={id === $plottedResult}>T{id + 1}, °С</th>
+          <th class:current-head={id === $plottedResult}>E{id + 1}, Вт</th>
         {/each}
       </tr>
       {#each $results[0].result as point, i}
