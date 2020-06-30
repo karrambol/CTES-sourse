@@ -1,4 +1,9 @@
-# svelte app for calculation processes in railroad overhead contact lines electric clamps
+# Clamp thermal electrical solver
+
+Svelte app for calculation thermal and electric processes in railroad overhead contact lines conductive clamps
+
+Supports multithread calculation via webworker
+Odex calculation based on [odex-js](https://github.com/littleredcomputer/odex-js)
 
 ## Get started
 
