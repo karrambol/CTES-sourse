@@ -741,7 +741,7 @@
 	  return Math.log(x) / Math.LN10
 	};
 	exports.Solver = Solver;
-	//# sourceMappingURL=odex.js.map
+
 	});
 
 	var odex$1 = unwrapExports(odex);
