@@ -73,7 +73,7 @@
     <span>{expanded ? 'свернуть' : 'развернуть...'}</span>
   </div>
   <div class="params-container">
-    {#each Object.values($resistance).filter(el => el.name === 'Rc' || expanded) as { name, value, units, description }}
+    {#each Object.values($resistance).filter(el => el.name === 'Rc' || el.name === 'n' || expanded) as { name, value, units, description }}
       {#if name === 'Rc'}
         <div class="param">
           <p>{description}:</p>
