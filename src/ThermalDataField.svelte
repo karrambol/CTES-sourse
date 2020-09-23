@@ -70,7 +70,7 @@
 
 <div class="CirquitDataField-container">
   <div class="pad" class:pad-expanded={expanded} on:click={toggleExpanded}>
-    <p>{expanded ? '▼' : '⏵'} Тепловые параметры</p>
+    <p>{expanded ? '&#9660;' : '&#9205;'} Тепловые параметры</p>
     <span>{expanded ? 'свернуть' : 'развернуть...'}</span>
   </div>
   <div class="params-container">
